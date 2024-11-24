@@ -1,0 +1,5 @@
+# architecture extension
+comment = 'extension of the data type qkmer and kmer'
+default_version = '1.0'
+module_pathname = '$libdir/architecture'
+relocatable = true
