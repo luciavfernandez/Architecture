@@ -5,6 +5,7 @@
 #include "pg_config.h"
 #include "fmgr.h"
 #include "funcapi.h"
+
 PG_MODULE_MAGIC;
 
 /*
@@ -34,6 +35,8 @@ Datum length_kmer(PG_FUNCTION_ARGS);
 Datum kmer_cast_from_text(PG_FUNCTION_ARGS);
 Datum kmer_cast_to_text(PG_FUNCTION_ARGS);
 Datum my_persona_sequece(PG_FUNCTION_ARGS);
+Datum kmer_hash(PG_FUNCTION_ARGS);
+uint32 djb2_hash(const char *str);
 
 // Internal utility functions for working with kmers
 static kmer* str_to_kmer( char*);
