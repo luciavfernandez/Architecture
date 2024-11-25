@@ -1,4 +1,5 @@
 #include "kmer.h"
+
 // Kmer structure maximum size is 32 bytes
 #define KMER_LENGTH 32
 
@@ -300,7 +301,7 @@ my_persona_sequece(PG_FUNCTION_ARGS)
         funcctx->call_cntr = j;
         funcctx->user_fctx = k;
         MemoryContextSwitchTo(oldcontext); 
-		elog(NOTICE, "init: %d", count);
+		//elog(NOTICE, "init: %d", count);
 		count++;
     }
     funcctx = SRF_PERCALL_SETUP();
@@ -309,9 +310,9 @@ my_persona_sequece(PG_FUNCTION_ARGS)
     k = (kmer *) funcctx->user_fctx;
     if(j<call)
     {
-		elog(NOTICE, "call____: %d", j);
+		// elog(NOTICE, "call____: %d", j);
 		for( int i = 0; i<len;i++){
-			elog(NOTICE, "letter: %c", k->ncl[i]);
+			// elog(NOTICE, "letter: %c", k->ncl[i]);
 			k->ncl[i]= str[i+j];
 		}
 		Datum result;
@@ -326,6 +327,8 @@ my_persona_sequece(PG_FUNCTION_ARGS)
 
     }
 }
+
+
 PG_FUNCTION_INFO_V1(starts_with_kmer_string);
 Datum 
 starts_with_kmer_string(PG_FUNCTION_ARGS)
@@ -335,4 +338,27 @@ starts_with_kmer_string(PG_FUNCTION_ARGS)
     bool result = starts_with_internal(str, k);  
     PG_FREE_IF_COPY(k, 1);
     PG_RETURN_BOOL(result);
+}
+
+
+// Hash function for kmer type
+PG_FUNCTION_INFO_V1(kmer_hash);
+uint32 djb2_hash(const char *str)
+{
+    uint32 hash = 5381;
+    int count;
+
+    while ((count = *str++))
+    {
+        hash = ((hash << 5) + hash) + count;  // hash * 33 + count
+    }
+
+    return hash;
+}
+
+Datum kmer_hash(PG_FUNCTION_ARGS)
+{
+    kmer *km = (kmer *) PG_GETARG_POINTER(0);
+    uint32 hash = djb2_hash(km->ncl);
+    PG_RETURN_UINT32(hash);
 }

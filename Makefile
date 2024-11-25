@@ -1,5 +1,5 @@
 MODULE_big	= architecture
-OBJS = dna.o qkmer.o kmer.o 
+OBJS = dna.o qkmer.o kmer.o sp_index.o
 EXTENSION   = architecture
 DATA        = architecture--1.0.sql architecture.control
 

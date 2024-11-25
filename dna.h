@@ -7,7 +7,7 @@
 #include "utils/geo_decls.h"
 #include "utils/builtins.h"
 #include "utils/varlena.h"
-#include "varatt.h"
+// #include "varatt.h"
 
 typedef struct {
     int32 vl_len_; // Lunghezza totale (obbligatorio per tipi varlena)

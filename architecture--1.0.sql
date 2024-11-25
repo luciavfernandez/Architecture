@@ -100,10 +100,36 @@ CREATE FUNCTION starts_with(cstring, kmer)
   AS 'MODULE_PATHNAME', 'contains'
   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
- CREATE FUNCTION generate_kmer(cstring,INTEGER)
+ CREATE FUNCTION generate_kmers(cstring,INTEGER)
  RETURNS SETOF kmer
   AS 'MODULE_PATHNAME', 'my_persona_sequece'
   LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+
+CREATE FUNCTION kmer_hash(kmer)
+RETURNS integer
+AS 'MODULE_PATHNAME', 'kmer_hash'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+
+CREATE FUNCTION spg_config() 
+RETURNS void 
+AS 'MODULE_PATHNAME', 'spg_config'
+LANGUAGE C IMMUTABLE;
+
+CREATE FUNCTION spg_picksplit() 
+RETURNS void
+AS 'MODULE_PATHNAME', 'spg_picksplit'
+LANGUAGE C IMMUTABLE ;
+
+CREATE FUNCTION spg_inner_consistent() 
+RETURNS void 
+AS 'MODULE_PATHNAME', 'spg_inner_consistent'
+LANGUAGE C IMMUTABLE;
+
+CREATE FUNCTION spg_leaf_consistent() 
+RETURNS void 
+AS 'MODULE_PATHNAME', 'spg_leaf_consistent'
+LANGUAGE C IMMUTABLE;
+
 
   /***************************************************************/
 
@@ -130,5 +156,22 @@ CREATE OPERATOR @> (
   COMMUTATOR = @>
 );
 
+CREATE OPERATOR CLASS kmer_hash_ops
+DEFAULT FOR TYPE kmer USING hash AS
+    OPERATOR 1 =,
+    FUNCTION 1 kmer_hash(kmer);  
+
 COMMENT ON TYPE kmer IS 'qkmer and kmer';
+
+--- Index
+
+CREATE OPERATOR CLASS kmer_spgist_ops
+DEFAULT FOR TYPE kmer USING spgist AS
+    OPERATOR 1 = (kmer, kmer),
+    FUNCTION 1 spg_config(),
+    FUNCTION 2 spg_picksplit(),
+    FUNCTION 3 spg_inner_consistent(),
+    FUNCTION 4 spg_leaf_consistent();
+
+
 
