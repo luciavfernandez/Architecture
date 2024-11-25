@@ -25,3 +25,15 @@ select d from arch;
 select dna_in('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),dna_out(dna_in('GAAAAAA'));
 
 SELECT version();
+
+SELECT k.kmer, count(*) FROM generate_kmers('ACGTACGT', 5) AS k(kmer) GROUP BY k.kmer;
+
+SELECT k.kmer FROM generate_kmers('ACGTACGT', 5) AS k(kmer);
+
+WITH kmers AS (
+    SELECT k.kmer, count(*) FROM generate_kmers('ATCGATCAC', 3) AS k(kmer) GROUP BY k.kmer)
+SELECT k.kmer,sum(count) AS total_count, count(*) AS distinct_count, count(*) FILTER (WHERE count = 1) AS unique_count FROM kmers GROUP BY 1;
+
+
+
+SELECT k.kmer, count(*), FROM generate_kmers('ATCGATCAC', 3) AS k(kmer) GROUP BY k.kmer ORDER BY count(*) DESC;
