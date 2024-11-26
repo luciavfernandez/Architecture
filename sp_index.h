@@ -15,12 +15,12 @@ typedef struct {
     int length; // Longitud del k-mer
 } Kmer;
 
-typedef struct spgConfigIn
+typedef struct
 {
     Oid         attType;        /* Data type to be indexed */
 } spgConfigIn;
 
-typedef struct spgConfigOut
+typedef struct
 {
     Oid         prefixType;     /* Data type of inner-tuple prefixes */
     Oid         labelType;      /* Data type of inner-tuple node labels */
