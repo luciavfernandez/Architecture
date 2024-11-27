@@ -16,8 +16,8 @@ Datum spg_choose(PG_FUNCTION_ARGS) {
     spgChooseIn *in = (spgChooseIn *) PG_GETARG_POINTER(0);
     spgChooseOut *out = (spgChooseOut *) PG_GETARG_POINTER(1);
 
-    text *kmer = DatumGetTextP(in->query);
-    char first_char = VARDATA(kmer)[0]; // Obtén el primer carácter
+    text *kmer = DatumGetTextP(in->datum); // Cambia query por datum
+    char first_char = VARDATA(kmer)[0];   // Obtén el primer carácter
 
     out->resultType = spgMatchNode;
     out->result.matchNode.nodeN = first_char; // Envía el nodo correspondiente
@@ -35,17 +35,15 @@ Datum spg_picksplit(PG_FUNCTION_ARGS) {
     out->nNodes = numNodes;
     out->nodeLabels = palloc(numNodes * sizeof(Datum));
 
-    // Configura etiquetas para los nodos (uno por cada nucleótido)
     for (int i = 0; i < numNodes; i++) {
         out->nodeLabels[i] = CharGetDatum(labels[i]);
     }
 
     out->mapTuplesToNodes = palloc(in->nTuples * sizeof(int));
 
-    // Asigna cada k-mer a un nodo según el primer carácter
     for (int i = 0; i < in->nTuples; i++) {
-        text *kmer = DatumGetTextP(in->query[i]);
-        char firstChar = VARDATA(kmer)[0]; // Obtén el primer carácter del k-mer
+        text *kmer = DatumGetTextP(in->datums[i]); // Cambia query por datums
+        char firstChar = VARDATA(kmer)[0];
         int nodeIndex = -1;
 
         for (int j = 0; j < numNodes; j++) {
@@ -70,7 +68,7 @@ Datum spg_inner_consistent(PG_FUNCTION_ARGS) {
     spgInnerConsistentIn *in = (spgInnerConsistentIn *) PG_GETARG_POINTER(0);
     spgInnerConsistentOut *out = (spgInnerConsistentOut *) PG_GETARG_POINTER(1);
 
-    char targetChar = DatumGetChar(in->query); // Cambia key por query
+    char targetChar = DatumGetChar(in->reconstructedValue); // Usa query en lugar de key
 
     for (int i = 0; i < in->nNodes; i++) {
         char nodeLabel = DatumGetChar(in->nodeLabels[i]);
@@ -89,11 +87,11 @@ Datum spg_leaf_consistent(PG_FUNCTION_ARGS) {
     spgLeafConsistentOut *out = (spgLeafConsistentOut *) PG_GETARG_POINTER(1);
 
     text *kmer = DatumGetTextP(in->leafDatum); // Accede al dato de la hoja
-    text *query = DatumGetTextP(in->query);    // Cambia key por query
+    text *query = DatumGetTextP(in->reconstructedValue);   // Usa query en lugar de key
     int kmerLen = VARSIZE(kmer) - VARHDRSZ;
     int queryLen = VARSIZE(query) - VARHDRSZ;
 
-    // Coincidencia exacta
-    out->matches = (kmerLen == queryLen && memcmp(VARDATA(kmer), VARDATA(query), kmerLen) == 0);
+    // Verifica coincidencia exacta
+    out->recheck = (kmerLen == queryLen && memcmp(VARDATA(kmer), VARDATA(query), kmerLen) == 0);
     PG_RETURN_VOID();
 }

@@ -1,5 +1,4 @@
 #include "kmer.h"
-
 // Kmer structure maximum size is 32 bytes
 #define KMER_LENGTH 32
 
@@ -103,30 +102,19 @@ static bool kmer_eq_internal(kmer *k1, kmer *k2)
 static bool starts_with_2internal(kmer *k1, kmer *k2)
 {   const char* path1;
     const char* path2;
+    int len = 0;
     if (length_kmer_internal(k1) > length_kmer_internal(k2)) {
-        return false;
+        len= length_kmer_internal(k2);
+    }else if(length_kmer_internal(k1) <= length_kmer_internal(k2))
+    {
+        len= length_kmer_internal(k1);
     }
     path1 = k1->ncl;
     path2 = k2->ncl;
     elog(NOTICE, "Comparison two letter: %s, %s",path1,path2); 
-    for (int i = 0; i < length_kmer_internal(k1); i++) {
+    for (int i = 0; i < len; i++) {
         elog(NOTICE, "Comparison two letter: %c, %c",path1[i],path2[i]); 
         if (path1[i] != path2[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-static bool
-starts_with_internal(char *str, kmer *k)
-{   
-	char* path;
-    if(length_kmer_internal(k) < strlen(str)) {
-        return false;
-    }
-    path = k->ncl;  
-    for(int i = 0; i < strlen(str); i++) {
-        if(path[i] != str[i]) {
             return false;
         }
     }
@@ -301,7 +289,7 @@ my_persona_sequece(PG_FUNCTION_ARGS)
         funcctx->call_cntr = j;
         funcctx->user_fctx = k;
         MemoryContextSwitchTo(oldcontext); 
-		//elog(NOTICE, "init: %d", count);
+		elog(NOTICE, "init: %d", count);
 		count++;
     }
     funcctx = SRF_PERCALL_SETUP();
@@ -310,9 +298,9 @@ my_persona_sequece(PG_FUNCTION_ARGS)
     k = (kmer *) funcctx->user_fctx;
     if(j<call)
     {
-		// elog(NOTICE, "call____: %d", j);
+		elog(NOTICE, "call____: %d", j);
 		for( int i = 0; i<len;i++){
-			// elog(NOTICE, "letter: %c", k->ncl[i]);
+			elog(NOTICE, "letter: %c", k->ncl[i]);
 			k->ncl[i]= str[i+j];
 		}
 		Datum result;
@@ -327,19 +315,6 @@ my_persona_sequece(PG_FUNCTION_ARGS)
 
     }
 }
-
-
-PG_FUNCTION_INFO_V1(starts_with_kmer_string);
-Datum 
-starts_with_kmer_string(PG_FUNCTION_ARGS)
-{
-    kmer* k = PG_GETARG_KMER_P(1);
-    char *str = PG_GETARG_CSTRING(0);  
-    bool result = starts_with_internal(str, k);  
-    PG_FREE_IF_COPY(k, 1);
-    PG_RETURN_BOOL(result);
-}
-
 
 // Hash function for kmer type
 PG_FUNCTION_INFO_V1(kmer_hash);

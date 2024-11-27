@@ -35,6 +35,8 @@ Datum length_kmer(PG_FUNCTION_ARGS);
 Datum kmer_cast_from_text(PG_FUNCTION_ARGS);
 Datum kmer_cast_to_text(PG_FUNCTION_ARGS);
 Datum my_persona_sequece(PG_FUNCTION_ARGS);
+Datum contains(PG_FUNCTION_ARGS);
+Datum starts_with_kmer(PG_FUNCTION_ARGS);
 Datum kmer_hash(PG_FUNCTION_ARGS);
 uint32 djb2_hash(const char *str);
 

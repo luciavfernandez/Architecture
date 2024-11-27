@@ -1,13 +1,13 @@
 drop extension architecture cascade;
 create extension architecture cascade;
-SELECT * FROM generate_kmer('ACGTACGT', 5);
+SELECT * FROM generate_kmers('ACGTACGT', 5);
 
 
 select length('ACCC'), length('ACGTACGT'::qkmer);
 
 select starts_with('ACG' ,'ACGTACGT'::kmer );
 
-SELECT k.kmer FROM generate_kmer('ACGTACGTTTTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTT', 2) AS k(kmer);
+SELECT k.kmer FROM generate_kmers'ACGTACGTTTTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTTACGTACGTTTTTTTTTTT', 2) AS k(kmer);
 
 select 'ACG'::kmer ^@ 'ACGTACGT' as contain1, 'ACG'::kmer ^@ 'ACGTACGT'::kmer as contain2;
 
@@ -26,14 +26,47 @@ select dna_in('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),dna_out(dna_in('GAAAAAA')
 
 SELECT version();
 
-SELECT k.kmer, count(*) FROM generate_kmers('ACGTACGT', 5) AS k(kmer) GROUP BY k.kmer;
 
-SELECT k.kmer FROM generate_kmers('ACGTACGT', 5) AS k(kmer);
+SELECT k.kmer,count(*) FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE kmer = 'ACGTA' GROUP BY kmer; 
 
-WITH kmers AS (
-    SELECT k.kmer, count(*) FROM generate_kmers('ATCGATCAC', 3) AS k(kmer) GROUP BY k.kmer)
-SELECT k.kmer,sum(count) AS total_count, count(*) AS distinct_count, count(*) FILTER (WHERE count = 1) AS unique_count FROM kmers GROUP BY 1;
+
+SELECT * FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE kmerˆ@'ACG';
 
 
 
-SELECT k.kmer, count(*), FROM generate_kmers('ATCGATCAC', 3) AS k(kmer) GROUP BY k.kmer ORDER BY count(*) DESC;
+SELECT * FROM kmers WHERE 'ANGTA' @> kmer;
+
+SELECT * FROM generate_kmers('ACCTACGTACGTACGTACGTACCT',5) AS k (kmer)WHERE kmer ^@ 'ACG';
+
+
+
+
+SELECT k.kmer,count(*) FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE kmer ^@ 'ACG' GROUP BY k.kmer; 
+
+
+
+SELECT * FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE 'ACGTA' @> kmer;
+
+SELECT k.kmer, count(*) FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 3) AS k(kmer) GROUP BY k.kmer ORDER BY count(*) DESC; --WORKS
+
+-- INDEX
+SELECT COUNT(*) FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE kmer = 'ACGTA'; --WORKS
+
+SELECT COUNT(*) FROM generate_kmers('ANCGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE kmer = 'ACGTA'; --WORKS
+
+SELECT * FROM generate_kmers('ACGTACGTACGTACGTACGTACGT', 5) AS k(kmer) WHERE 'ACGTA' @> kmer; -- WORKS
+
+SELECT * FROM generate_kmers('ACCTACGTACGTACGTACGTACCT',5) AS k (kmer) WHERE kmer ^@ 'ACG'; -- WORKS
+
+
+SELECT k.kmer,COUNT(*) FROM generate_kmers('ACCTACGTACGTACGTACGTACCT',5) AS k (kmer) WHERE kmer ^@ 'ACG' GROUP BY 1;
+
+
+
+
+
+
+
+
+
+
