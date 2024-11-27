@@ -19,6 +19,7 @@ typedef struct {
 // Declaración de funciones del índice SP-GiST
 extern Datum spg_config(PG_FUNCTION_ARGS);
 extern Datum spg_picksplit(PG_FUNCTION_ARGS);
+extern Datum spg_choose(PG_FUNCTION_ARGS);
 extern Datum spg_inner_consistent(PG_FUNCTION_ARGS);
 extern Datum spg_leaf_consistent(PG_FUNCTION_ARGS);
 

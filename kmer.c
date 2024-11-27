@@ -51,7 +51,7 @@ static char* kmer_to_str(const kmer* k)
 }
 
 
-// Input from the user 
+
 PG_FUNCTION_INFO_V1(kmer_in);
 Datum kmer_in(PG_FUNCTION_ARGS)
 {
@@ -66,6 +66,8 @@ Datum kmer_out(PG_FUNCTION_ARGS)
     const kmer* s = PG_GETARG_KMER_P(0);
     PG_RETURN_CSTRING(kmer_to_str(s));
 }
+
+
 
 PG_FUNCTION_INFO_V1(kmer_cast_from_text);
 Datum

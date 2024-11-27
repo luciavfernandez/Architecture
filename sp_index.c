@@ -1,5 +1,7 @@
 #include "sp_index.h"
-
+#include "postgres.h"
+#include "access/spgist.h"
+#include "utils/builtins.h"
 
 PG_FUNCTION_INFO_V1(spg_config);
 Datum spg_config(PG_FUNCTION_ARGS) {

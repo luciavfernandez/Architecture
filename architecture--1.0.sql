@@ -34,7 +34,8 @@ LANGUAGE C IMMUTABLE STRICT;
 CREATE TYPE kmer (
 	INPUT          = kmer_in,
 	OUTPUT         = kmer_out,
-  INTERNALLENGTH = 32
+  INTERNALLENGTH = 32,
+  STORAGE = plain
 );
 CREATE TYPE qkmer (
 	INPUT          = qkmer_in,
@@ -125,6 +126,11 @@ RETURNS void
 AS 'MODULE_PATHNAME', 'spg_leaf_consistent'
 LANGUAGE C IMMUTABLE;
 
+CREATE FUNCTION spg_choose() 
+RETURNS void
+AS 'MODULE_PATHNAME', 'spg_choose'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+
   /***************************************************************/
 
 CREATE OPERATOR = (
@@ -159,9 +165,10 @@ CREATE OPERATOR CLASS kmer_spgist_ops
 DEFAULT FOR TYPE kmer USING spgist AS
     OPERATOR 1 = (kmer, kmer),
     FUNCTION 1 spg_config(),
-    FUNCTION 2 spg_picksplit(),
-    FUNCTION 3 spg_inner_consistent(),
-    FUNCTION 4 spg_leaf_consistent();
+    FUNCTION 2 spg_choose(),
+    FUNCTION 3 spg_picksplit(),
+    FUNCTION 4 spg_inner_consistent(),
+    FUNCTION 5 spg_leaf_consistent();
 
 
 /*****************************************************************/

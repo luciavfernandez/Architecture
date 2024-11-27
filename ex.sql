@@ -1,7 +1,7 @@
 drop extension architecture cascade;
 create extension architecture cascade;
 SELECT * FROM generate_kmers('ACGTACGT', 5);
-
+psql postgres
 
 select length('ACCC'), length('ACGTACGT'::qkmer);
 
@@ -67,6 +67,14 @@ SELECT k.kmer,COUNT(*) FROM generate_kmers('ACCTACGTACGTACGTACGTACCT',5) AS k (k
 
 
 
+SELECT typname FROM pg_type WHERE typname = 'kmer';
 
+
+CREATE TABLE dna_table(id int, kmer kmer);
+INSERT INTO dna_table(id, kmer) VALUES(1, 'ATC'),(2, 'TCG'),(3, 'CGA'),(4, 'GAT'),(5, 'TCA'),(6, 'CAC');
+select * from dna_table;
+
+SELECT typname, oid FROM pg_type WHERE typname = 'kmer';
+CREATE INDEX kmer_idx ON dna_table USING spgist(kmer);
 
 
